@@ -7,4 +7,9 @@ const router = Router();
 
 // TODO: Implement route controllers for user
 
+router.get('/', (req, res) => {
+    const users = UserService.getAll();
+    res.send(users);
+});
+
 module.exports = router;

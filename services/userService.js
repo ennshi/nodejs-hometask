@@ -11,6 +11,15 @@ class UserService {
         }
         return item;
     }
+    getAll() {
+        const users = UserRepository.getAll();
+        if(!users) {
+            return null;
+        }
+        return users;
+    }
+
+
 }
 
 module.exports = new UserService();
