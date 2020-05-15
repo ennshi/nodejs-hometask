@@ -19,8 +19,7 @@ class UserService {
         return users;
     }
     create(data) {
-        const { email, firstName, lastName, password, phoneNumber } = data;
-        const user = UserRepository.create({ email, firstName, lastName, password, phoneNumber });
+        const user = UserRepository.create(data);
         if(!user) {
             return null;
         }

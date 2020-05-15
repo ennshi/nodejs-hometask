@@ -7,7 +7,6 @@ delete userSchema.id;
 const createUserValid = (req, res, next) => {
     // TODO: Implement validatior for user entity during creation
     const newUser = req.body;
-    const errors = [];
     try {
         if (!Object.keys(userSchema).every((key) => newUser.hasOwnProperty(key))) {
             return res.status(400).send({
