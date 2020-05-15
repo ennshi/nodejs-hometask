@@ -49,7 +49,7 @@ router.post('/', createFighterValid, (req, res) => {
     }
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', updateFighterValid, (req, res) => {
     const _id = req.params.id;
     const dataToUpdate = req.body;
     try {

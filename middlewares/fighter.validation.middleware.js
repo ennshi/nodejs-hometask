@@ -1,4 +1,5 @@
 const { fighter } = require('../models/fighter');
+const FighterService = require('../services/fighterService');
 
 const fighterSchema = Object.assign({}, fighter);
 delete fighterSchema.id;
@@ -33,7 +34,36 @@ const createFighterValid = (req, res, next) => {
 
 const updateFighterValid = (req, res, next) => {
     // TODO: Implement validatior for fighter entity during update
-    next();
+    try {
+        if(!fighterExists({id: req.params.id})) {
+            return res.status(404).send({
+                error: true,
+                message: "Fighter not found"
+            });
+        }
+        const allowedUpdates = Object.keys(fighterSchema);
+        const reqUpdates = Object.keys(req.body);
+        const isValidUpdate = reqUpdates.every((field) => allowedUpdates.includes(field));
+        if (!isValidUpdate) {
+            return res.status(400).send({
+                error: true,
+                message: "Invalid updates"
+            });
+        }
+        const errors = fieldsValidation(req.body);
+        if(errors.length) {
+            return res.status(400).send({
+                error: true,
+                message: errors
+            });
+        }
+        next();
+    } catch(e) {
+        res.status(500).send({
+            error: true,
+            message: e.message
+        });
+    }
 };
 
 const fieldsValidation = (fighter) => {
@@ -61,6 +91,10 @@ const fieldsValidation = (fighter) => {
     return errors;
 };
 
+const fighterExists = (id) => {
+    return FighterService.search(id);
+};
+
 const minLength = (value, validMinLength) => {
     return value.trim().length >= validMinLength;
 };
@@ -75,5 +109,6 @@ const checkValueLimits = (value, min, max) => {
     }
     return false;
 };
+
 exports.createFighterValid = createFighterValid;
 exports.updateFighterValid = updateFighterValid;
