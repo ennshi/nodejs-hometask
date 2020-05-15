@@ -50,7 +50,7 @@ router.post('/', createUserValid, (req, res) => {
     }
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', updateUserValid, (req, res) => {
     const _id = req.params.id;
     const dataToUpdate = req.body;
     try {

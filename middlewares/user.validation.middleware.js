@@ -10,38 +10,20 @@ const createUserValid = (req, res, next) => {
     const errors = [];
     try {
         if (!Object.keys(userSchema).every((key) => newUser.hasOwnProperty(key))) {
-            res.status(400).send({
+            return res.status(400).send({
                 error: true,
                 message: 'All fields must be filled in.'
             });
-        } else {
-            const { email, firstName, lastName, password, phoneNumber } = newUser;
-            if(!isGmailEmail(email)) {
-                errors.push('Please enter a valid email @gmail.com.');
-            }
-            if(!uniqueEmail(email)) {
-                errors.push('The email is already registered. Please sign in.');
-            }
-            if(!isPhoneNumber(phoneNumber)) {
-                errors.push('Please enter a valid phone number (+380*********).');
-            }
-            if(!minLength(firstName, 2) || !maxLength(firstName, 46)) {
-                errors.push('Please enter a correct first name.')
-            }
-            if(!minLength(lastName, 2) || !maxLength(lastName, 46)) {
-                errors.push('Please enter a correct last name.')
-            }
-            if(!minLength(password, 3) || !maxLength(password, 128)) {
-                errors.push('Please enter a password of 3 - 128 characters.')
-            }
-            if(errors.length) {
-                res.status(400).send({
-                    error: true,
-                    message: errors
-                });
-            }
-            req.newUser = { email, firstName, lastName, password, phoneNumber };
         }
+        const errors = fieldsValidation(req.body);
+        if(errors.length) {
+            return res.status(400).send({
+                error: true,
+                message: errors
+            });
+        }
+        const { email, firstName, lastName, password, phoneNumber } = newUser;
+        req.newUser = { email, firstName, lastName, password, phoneNumber };
         next();
     } catch(e) {
         res.status(500).send({
@@ -53,8 +35,73 @@ const createUserValid = (req, res, next) => {
 
 const updateUserValid = (req, res, next) => {
     // TODO: Implement validatior for user entity during update
+    try {
+        if(!userExists({id: req.params.id})) {
+            return res.status(404).send({
+                error: true,
+                message: "User not found"
+            });
+        }
+        const allowedUpdates = Object.keys(userSchema);
+        const reqUpdates = Object.keys(req.body);
+        const isValidUpdate = reqUpdates.every((field) => allowedUpdates.includes(field));
+        if (!isValidUpdate) {
+            return res.status(400).send({
+                error: true,
+                message: "Invalid updates"
+            });
+        }
+        const errors = fieldsValidation(req.body);
+        if(errors.length) {
+            return res.status(400).send({
+                error: true,
+                message: errors
+            });
+        }
+        next();
+    } catch(e) {
+        res.status(500).send({
+            error: true,
+            message: e.message
+        });
+    }
+};
 
-    next();
+const fieldsValidation = (user) => {
+    const errors = [];
+    if(user.hasOwnProperty('email')) {
+        if (!isGmailEmail(user.email)) {
+            errors.push('Please enter a valid email @gmail.com.');
+        }
+        if (!uniqueEmail(user.email)) {
+            errors.push('The email is already registered. Please sign in.');
+        }
+    }
+    if(user.hasOwnProperty('phoneNumber')) {
+        if (!isPhoneNumber(user.phoneNumber)) {
+            errors.push('Please enter a valid phone number (+380*********).');
+        }
+    }
+    if(user.hasOwnProperty('firstName')) {
+        if (!minLength(user.firstName, 2) || !maxLength(user.firstName, 46)) {
+            errors.push('Please enter a correct first name.')
+        }
+    }
+    if(user.hasOwnProperty('lastName')) {
+        if (!minLength(user.lastName, 2) || !maxLength(user.lastName, 46)) {
+            errors.push('Please enter a correct last name.')
+        }
+    }
+    if(user.hasOwnProperty('password')) {
+        if (!minLength(user.password, 3) || !maxLength(user.password, 128)) {
+            errors.push('Please enter a password of 3 - 128 characters.')
+        }
+    }
+    return errors;
+};
+
+const userExists = (id) => {
+    return UserService.search(id);
 };
 
 const minLength = (value, validMinLength) => {
