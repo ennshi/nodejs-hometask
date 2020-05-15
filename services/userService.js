@@ -29,7 +29,11 @@ class UserService {
         return UserRepository.update(id, data);
     }
     delete(id) {
-        return UserRepository.delete(id);
+        const user = UserRepository.delete(id);
+        if(!user.length) {
+            return null;
+        }
+        return user[0];
     }
 
 }
