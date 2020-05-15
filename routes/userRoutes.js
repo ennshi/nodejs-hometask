@@ -38,8 +38,8 @@ router.get('/:id', (req, res) => {
     }
 });
 
-router.post('/', (req, res) => {
-    const user = req.body;
+router.post('/', createUserValid, (req, res) => {
+    const user = req.newUser;
     try {
         res.send(UserService.create(user));
     } catch(e) {
