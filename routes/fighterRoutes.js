@@ -38,7 +38,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', createFighterValid, (req, res) => {
-    const fighter = req.body;
+    const fighter = req.newFighter;
     try {
         res.send(FighterService.create(fighter));
     } catch(e) {
