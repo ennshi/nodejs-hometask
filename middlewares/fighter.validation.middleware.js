@@ -27,7 +27,7 @@ const createFighterValid = (req, res, next) => {
     } catch(e) {
         res.status(500).send({
             error: true,
-            message: e.message
+            message: "Internal server error"
         });
     }
 };
@@ -61,7 +61,7 @@ const updateFighterValid = (req, res, next) => {
     } catch(e) {
         res.status(500).send({
             error: true,
-            message: e.message
+            message: "Internal server error"
         });
     }
 };

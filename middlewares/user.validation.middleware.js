@@ -27,7 +27,7 @@ const createUserValid = (req, res, next) => {
     } catch(e) {
         res.status(500).send({
             error: true,
-            message: e.message
+            message: "Internal server error"
         });
     }
 };
@@ -61,7 +61,7 @@ const updateUserValid = (req, res, next) => {
     } catch(e) {
         res.status(500).send({
             error: true,
-            message: e.message
+            message: "Internal server error"
         });
     }
 };
